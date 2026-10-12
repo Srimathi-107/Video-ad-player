@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Video Ad Player</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 30px 20px;
+        font-family: Arial, sans-serif;
+        color: #f8fafc;
+        background:
+          radial-gradient(circle at top, #1e3a8a, transparent 45%),
+          linear-gradient(135deg, #020617, #111827);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Heading */
+      header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .tag {
+        display: inline-block;
+        padding: 8px 15px;
+        margin-bottom: 18px;
+        border: 1px solid #334155;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #93c5fd;
+        font-size: 12px;
+        font-weight: bold;
+        letter-spacing: 2px;
+      }
+
+      h1 {
+        margin: 0 0 14px;
+        font-size: clamp(30px, 5vw, 46px);
+        line-height: 1.2;
+        letter-spacing: -1px;
+      }
+
+      h1 span {
+        color: #60a5fa;
+      }
+
+      header p {
+        max-width: 520px;
+        margin: 0 auto;
+        color: #94a3b8;
+        font-size: 15px;
+        line-height: 1.8;
+      }
+
+      /* Center Video Player */
+      .player {
+        width: min(850px, 100%);
+        aspect-ratio: 16 / 9;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        border-radius: 18px;
+        background: #000;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+      }
+
+      video {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        inset: 0;
+        object-fit: contain;
+        background: #000;
+      }
+
+      /* Ad Badge */
+      .ad-label {
+        position: absolute;
+        z-index: 2;
+        top: 16px;
+        left: 16px;
+        padding: 7px 11px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 6px;
+        color: #fff;
+        background: rgba(15, 23, 42, 0.8);
+        font-size: 11px;
+        letter-spacing: 1px;
+        pointer-events: none;
+      }
+
+      /* Skip Button */
+      #b {
+        position: absolute;
+        z-index: 3;
+        right: 18px;
+        bottom: 25px;
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 8px;
+        color: white;
+        background: rgba(15, 23, 42, 0.9);
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        transition: 0.25s ease;
+      }
+
+      #b:hover {
+        background: #2563eb;
+        border-color: #60a5fa;
+        transform: translateY(-2px);
+      }
+
+      #b:focus-visible {
+        outline: 2px solid #93c5fd;
+        outline-offset: 3px;
+      }
+
+      /* Bottom Text */
+      .bottom-text {
+        margin-top: 22px;
+        color: #64748b;
+        font-size: 13px;
+        text-align: center;
+      }
+
+      .bottom-text span {
+        color: #93c5fd;
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        body {
+          padding: 22px 12px;
+        }
+
+        header {
+          margin-bottom: 25px;
+        }
+
+        header p {
+          font-size: 13px;
+        }
+
+        .player {
+          border-radius: 12px;
+        }
+
+        .ad-label {
+          top: 10px;
+          left: 10px;
+          padding: 6px 8px;
+          font-size: 10px;
+        }
+
+        #b {
+          right: 10px;
+          bottom: 42px;
+          padding: 9px 12px;
+          gap: 7px;
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="tag">▶ SMART PLAYER</div>
+      <h1>Watch More.<br /><span>Enjoy Every Moment.</span></h1>
+
+      <p>
+        Enjoy a seamless video experience with quick ad skipping and automatic
+        playback. Less waiting, more watching.
+      </p>
+    </header>
+
+    <div class="player">
+      <div class="ad-label">ADVERTISEMENT</div>
+
+      <video id="v" controls autoplay muted></video>
+
+      <button id="b">Skip Ads <span>→</span></button>
+    </div>
+
+    <p class="bottom-text">
+      A smarter way to watch videos · <span>Simple. Smooth. Seamless.</span>
+    </p>
+
+    <script>
+      let a = document.getElementById("v");
+      let b = document.getElementById("b");
+      let adsplay = true;
+
+      // Advertisement video
+      a.src =
+        "https://res.cloudinary.com/m5gyh8bw/video/upload/v1791798514/vidssave.com_Nutella_Always_Better_Together_Advert_2024_30sec_480P.mp4";
+
+      a.play().catch((error) => {
+        console.log("Video autoplay prevented:", error);
+      });
+
+      b.style.display = "none";
+
+      // Show Skip Ads button after 9 seconds
+      a.addEventListener("play", function () {
+        if (!adsplay) return;
+
+        setTimeout(() => {
+          if (adsplay && a.currentTime < a.duration) {
+            b.style.display = "flex";
+          }
+        }, 10000);
+      });
+
+      // Play main video when advertisement ends
+      a.addEventListener("ended", function () {
+        if (adsplay) {
+          mainvideo();
+        }
+      });
+
+      // Skip advertisement
+      b.addEventListener("click", function () {
+        if (adsplay) {
+          mainvideo();
+        }
+      });
+
+      function mainvideo() {
+        adsplay = false;
+
+        a.src =
+          "https://res.cloudinary.com/m5gyh8bw/video/upload/v1791798505/vidssave.com_ROYAL_ENFIELD_CLASSIC_350_STEALTH_BLACK_CINEMATIC_VIDEO_144P.mp4";
+
+        b.style.display = "none";
+
+        a.play().catch((error) => {
+          console.log("Main video playback prevented:", error);
+        });
+      }
+    </script>
+  </body>
+</html>
